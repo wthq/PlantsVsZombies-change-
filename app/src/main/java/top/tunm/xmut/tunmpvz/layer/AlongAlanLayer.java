@@ -1,3 +1,4 @@
+//直线排列的元素
 package top.tunm.xmut.tunmpvz.layer;
 
 import org.cocos2d.actions.base.CCRepeatForever;

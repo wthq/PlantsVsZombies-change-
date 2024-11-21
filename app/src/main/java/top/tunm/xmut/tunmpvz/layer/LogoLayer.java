@@ -1,3 +1,4 @@
+//游戏的标志或标题画面
 package top.tunm.xmut.tunmpvz.layer;
 
 import android.view.MotionEvent;

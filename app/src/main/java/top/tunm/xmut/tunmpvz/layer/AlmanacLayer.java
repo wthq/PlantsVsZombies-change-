@@ -1,3 +1,4 @@
+//游戏的图鉴或百科全书
 package top.tunm.xmut.tunmpvz.layer;
 
 import android.view.MotionEvent;

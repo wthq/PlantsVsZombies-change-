@@ -1,3 +1,4 @@
+//战斗中的分界线或边界
 package top.tunm.xmut.tunmpvz.layer;
 
 import android.util.SparseArray;

@@ -4,7 +4,7 @@ buildscript {
     
     repositories {
         google()
-        jcenter()
+        mavenCentral() // 使用 Maven Central 作为替代
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.6.1'
@@ -18,10 +18,11 @@ buildscript {
 allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral() // 使用 Maven Central 作为替代
+
     }
 }
 
-task clean(type: Delete) {
+tasks.register('clean', Delete){
     delete rootProject.buildDir
 }

@@ -1,3 +1,4 @@
+//子弹的基本属性和行为
 package top.tunm.xmut.tunmpvz.bullet;
 
 import org.cocos2d.actions.base.CCRepeatForever;

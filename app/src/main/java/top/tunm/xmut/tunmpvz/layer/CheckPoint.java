@@ -1,3 +1,4 @@
+//游戏中的检查点或关卡
 package top.tunm.xmut.tunmpvz.layer;
 
 /**
