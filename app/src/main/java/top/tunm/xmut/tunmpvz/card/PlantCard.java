@@ -10,7 +10,7 @@ public class PlantCard {
     private CCSprite light;
     private CCSprite dark;
 
-    // 第一个构造函数示例修改
+
     public PlantCard(int id) {
         this.id = id;
         try {
