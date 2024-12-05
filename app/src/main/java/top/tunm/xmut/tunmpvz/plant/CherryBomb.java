@@ -5,7 +5,7 @@ import org.cocos2d.actions.instant.CCCallFunc;
 import org.cocos2d.actions.instant.CCHide;
 import org.cocos2d.actions.interval.CCDelayTime;
 import org.cocos2d.actions.interval.CCSequence;
-import top.tunm.xmut.tunmpvz.plant.Peashooter; // 导入豌豆射手类，如果之前没导入的话，添加在文件开头的import区域
+import top.tunm.xmut.tunmpvz.plant.Kahu; // 导入豌豆射手类，如果之前没导入的话，添加在文件开头的import区域
 import top.tunm.xmut.tunmpvz.plant.ShooterPlant;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -60,13 +60,20 @@ public class CherryBomb extends Plant{
                 zombie.death(1);
                 zombie.removeSelf();
                 zombieIterator.remove();
-                // 在僵尸死亡位置生成豌豆射手的代码开始
+                // 在僵尸死亡位置生成豌豆射手
                 float x = zombie.getPosition().x;
                 float y = zombie.getPosition().y;
-                Peashooter peaShooter = new Peashooter();
-                peaShooter.setPosition(x, y);
-                getParent().addChild(peaShooter);
-// 在僵尸死亡位置生成豌豆射手的代码结束
+                Kahu kahu = new Kahu();
+                kahu.setPosition(x, y);
+                getParent().addChild(kahu);
+                // 实现5秒后隐藏Kahu
+                CCDelayTime delayTime = CCDelayTime.action(3.0f);  // 创建延迟5秒的动作
+                CCHide hideAction = CCHide.action();  // 创建隐藏动作
+                CCSequence sequence = CCSequence.actions(delayTime, hideAction);  // 组合成顺序动作，先延迟再隐藏
+                kahu.runAction(sequence);
+
+
+
             }
         }
 

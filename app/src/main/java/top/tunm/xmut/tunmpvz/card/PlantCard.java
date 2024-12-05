@@ -32,7 +32,7 @@ public class PlantCard {
         return sprite;
     }
 
-    // 其他代码保持不变，比如第二个构造函数等
+    
 
     public int getId() {
         return id;
