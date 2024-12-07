@@ -67,7 +67,7 @@ public class CherryBomb extends Plant{
                 kahu.setPosition(x, y);
                 getParent().addChild(kahu);
                 // 实现5秒后隐藏Kahu
-                CCDelayTime delayTime = CCDelayTime.action(3.0f);  // 创建延迟5秒的动作
+                CCDelayTime delayTime = CCDelayTime.action(5.0f);  // 创建延迟5秒的动作
                 CCHide hideAction = CCHide.action();  // 创建隐藏动作
                 CCSequence sequence = CCSequence.actions(delayTime, hideAction);  // 组合成顺序动作，先延迟再隐藏
                 kahu.runAction(sequence);
