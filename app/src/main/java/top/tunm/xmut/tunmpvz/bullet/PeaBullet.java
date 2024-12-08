@@ -38,7 +38,7 @@ public class PeaBullet extends Bullet {
     public PeaBullet(ShooterPlant shooterPlant, String path, boolean isLeft) {
         super(path, shooterPlant, isLeft);
     }
-
+    private static int counter = 0; // 静态变量，用于计数，在类的不同实例间共享状态
     /**
      * 显示子弹爆炸效果，并播放音效。
      *
@@ -46,7 +46,8 @@ public class PeaBullet extends Bullet {
      */
     @Override
     public void showBulletBlast(Zombie zombie) {
-        if (isFire()) {
+        counter++;
+        if ( (counter % 2 == 0)) {
             showFireBombEffect(zombie);
         } else {
             showPeaEffect(zombie);

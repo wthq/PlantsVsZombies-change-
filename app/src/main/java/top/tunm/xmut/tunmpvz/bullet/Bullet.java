@@ -26,7 +26,7 @@ public abstract class Bullet extends CCSprite {
     private int attack = 20;           // 子弹攻击力
     private ShooterPlant shooterPlant; // 发射子弹的植物
     private boolean isLeft = false;    // 子弹方向是否为左
-    private boolean isFire = false;    // 是否为火焰弹
+    private boolean isFire = counter % 2 == 0;;    // 是否为火焰弹
 
     /**
      * 构造函数：创建一个普通子弹。
@@ -69,11 +69,12 @@ public abstract class Bullet extends CCSprite {
      * 启动火焰弹特效，并调整其属性。
      */
     public void fire() {
-        isFire = true;
+        counter++;
+        isFire = counter % 2 == 0;
         attack = 45;
         speed = 250;
 
-        String animationPath = isLeft ? "bullet/PB11/bullet%02d.png" : "bullet/FireButtle/bullet%02d.png";
+        String animationPath = isFire ? "bullet/PB11/bullet%02d.png" : "bullet/FireButtle/bullet%02d.png";
         ArrayList<CCSpriteFrame> frames = new ArrayList<>();
 
         for (int i = 0; i < 2; i++) {
@@ -128,12 +129,18 @@ public abstract class Bullet extends CCSprite {
     public abstract void showBulletBlast(Zombie zombie);
 
     // Getters and Setters
+    private static int counter = 0; // 静态变量，用于计数，在类的不同实例间共享状态
+
     public boolean isFire() {
-        return isFire;
+        counter++;
+        return counter % 2 == 0;
     }
 
     public void setFire(boolean fire) {
-        isFire = fire;
+        if (counter % 2 == 0) {
+            isFire = fire;
+        }
+       else             isFire = false;
     }
 
     public int getSpeed() {
