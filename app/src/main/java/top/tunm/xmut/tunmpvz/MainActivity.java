@@ -19,21 +19,31 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // 处理沉浸式全屏及隐藏导航栏相关逻辑
+        handleFullScreenSettings();
+        // 设置屏幕常亮
+        setScreenKeepOn();
+        CCGLSurfaceView ccglSurfaceView = new CCGLSurfaceView(this);
+        setContentView(ccglSurfaceView);
+        ccDirector = CCDirector.sharedDirector();
+        ccDirector.attachInView(ccglSurfaceView);
+        ccDirector.setDisplayFPS(true);
+        ccDirector.setScreenSize(1280, 768);
+        CCScene ccScene = CCScene.node();
+        ccScene.addChild(new LogoLayer());
+        ccDirector.runWithScene(ccScene);
+        ToolsSet.preloadSound();
+    }
+
+    private void handleFullScreenSettings() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                     | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         }
+    }
+
+    private void setScreenKeepOn() {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        CCGLSurfaceView ccglSurfaceView=new CCGLSurfaceView(this);
-        setContentView(ccglSurfaceView);
-        ccDirector= CCDirector.sharedDirector();
-        ccDirector.attachInView(ccglSurfaceView);
-        ccDirector.setDisplayFPS(true);
-        ccDirector.setScreenSize(1280,768);//设置初始屏幕
-        CCScene ccScene= CCScene.node();
-        ccScene.addChild(new LogoLayer());
-        ccDirector.runWithScene(ccScene);
-        ToolsSet.preloadSound();
     }
 
     @Override
