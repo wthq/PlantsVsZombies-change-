@@ -18,99 +18,169 @@ import top.tunm.xmut.tunmpvz.effect.AEffect;
 import top.tunm.xmut.tunmpvz.layer.CombatLayer;
 
 /**
- * Created by jingyuyan on 2018/12/13.
+ * 读报僵尸类，继承自 Zombie 类。
  */
-
-// 读报僵尸
-
 public class NewspaperZombie extends Zombie {
 
-    private boolean isLast;
-    private boolean isLastShow;
-
+    private ZombieState state; // 当前状态
 
     public NewspaperZombie(CombatLayer combatLayer, CGPoint start, CGPoint end) {
         super(combatLayer, start, end);
-        setMoveInt(ToolsSet.newspaperZombieIntB);
-        setMove(ToolsSet.newspaperZombieMoveB);
-        setAttackInt(ToolsSet.newspaperZombieAttackIntB);
-        setAttacka(ToolsSet.newspaperZombieAttackB);
-        setHP(500);
-        setAttack(15);
-        setSpeed(15);
-        move();
+        state = new NormalState(this); // 初始化为普通状态
+        initializeZombie(); // 初始化僵尸的属性和状态
+    }
+
+    // 初始化僵尸属性的方法
+    private void initializeZombie() {
+        state.initialize(); // 让当前状态初始化僵尸属性
+        move(); // 开始移动
     }
 
     @Override
-    public void hurtCompute(int hurt){
-        setHP(getHP()-hurt);
-        if (getHP()<0){
-            setHP(0);
+    public void hurtCompute(int hurt) {
+        setHP(Math.max(getHP() - hurt, 0)); // 确保HP不低于0
+        state.handleHurt(); // 让当前状态处理伤害
+    }
+
+    @Override
+    public void death(int dieState) {
+        state.handleDeath(dieState); // 让当前状态处理死亡
+    }
+
+    // 状态接口
+    interface ZombieState {
+        void initialize();
+        void handleHurt();
+        void handleDeath(int dieState);
+    }
+
+    // 普通状态类
+    class NormalState implements ZombieState {
+        private NewspaperZombie zombie;
+
+        NormalState(NewspaperZombie zombie) {
+            this.zombie = zombie;
         }
-        if (getHP()<=200){
-            if (!isLast){
-                isLast = true;
-                ArrayList<CCSpriteFrame> frames=new ArrayList<>();
-                for (int i = 0; i < 10; i++) {
-                    CCSpriteFrame ccSpriteFrame= CCSprite.sprite(String.format(Locale.CHINA,
-                            "zombies/zombies_1/NewspaperZombie/last%02d.png",i)).displayedFrame();
-                    frames.add(ccSpriteFrame);
-                }
-                setMoveInt(ToolsSet.newspaperZombieIntA);
-                setMove(ToolsSet.newspaperZombieMoveA);
-                setAttackInt(ToolsSet.newspaperZombieAttackIntA);
-                setAttacka(ToolsSet.newspaperZombieAttackA);
 
-                CCAnimation ccAnimation= CCAnimation.animationWithFrames(frames,0.1f);
-                CCAnimate ccAnimate= CCAnimate.action(ccAnimation,true);
-                CCRepeatForever ccRepeatForever= CCRepeatForever.action(ccAnimate);
-                runAction(ccRepeatForever);
+        @Override
+        public void initialize() {
+            zombie.setMoveInt(ToolsSet.newspaperZombieIntB);
+            zombie.setMove(ToolsSet.newspaperZombieMoveB);
+            zombie.setAttackInt(ToolsSet.newspaperZombieAttackIntB);
+            zombie.setAttacka(ToolsSet.newspaperZombieAttackB);
+            zombie.setHP(500);
+            zombie.setAttack(15);
+            zombie.setSpeed(15);
+        }
 
-                setSpeed(15);
-
-                CCDelayTime ccDelayTime = CCDelayTime.action(1);
-                CCCallFunc ccCallFunc = CCCallFunc.action(this,"move");
-                CCSequence ccSequence = CCSequence.actions(ccDelayTime,ccCallFunc);
-                runAction(ccSequence);
+        @Override
+        public void handleHurt() {
+            if (zombie.getHP() <= 200) {
+                zombie.state = new LastState(zombie); // 转变为最后状态
+                zombie.state.initialize(); // 初始化最后状态
             }
         }
 
-    }
-
-    @Override
-    // 僵尸死亡效果
-    public void death(int dieState){
-        switch (dieState){
-            // 默认死法，头掉倒地
-            case 0:
-                AEffect aEffect = new AEffect("zombies/zombies_1/NewspaperZombie/die%02d.png",11,2,0.181f);
-                aEffect.setPosition(ccp(getPosition().x,getPosition().y));
-                getParent().addChild(aEffect,6);
-
-                // 头掉了
-                AEffect head = new AEffect("zombies/zombies_1/NewspaperZombie/head%02d.png",10,1.2f,0.12f);
-                head.setPosition(ccp(getPosition().x+20,getPosition().y-30));
-                getParent().addChild(head,6);
-
-                break;
-
-            // 被烧焦了
-            case 1:
-                AEffect aEffect2 = new AEffect("zombies/zombies_1/BoomDie/Frame%02d.png",20,4,0.2f);
-                aEffect2.setPosition(ccp(getPosition().x,getPosition().y));
-                getParent().addChild(aEffect2,6);
-
-            default:
-                break;
+        @Override
+        public void handleDeath(int dieState) {
+            // 处理死亡效果
+            switch (dieState) {
+                case 0:
+                    createDeathEffect("zombies/zombies_1/NewspaperZombie/die%02d.png", 11, 2, 0.181f);
+                    createDeathEffect("zombies/zombies_1/NewspaperZombie/head%02d.png", 10, 1.2f, 0.12f, CGPoint.ccp(zombie.getPosition().x + 20, zombie.getPosition().y - 30));
+                    break;
+                case 1:
+                    createDeathEffect("zombies/zombies_1/BoomDie/Frame%02d.png", 20, 4, 0.2f);
+                    break;
+                default:
+                    break;
+            }
         }
 
-//        switch (dieState){
-//            // 普通死法
-//            case 0:
-//
-//                break;
-//            default:
-//                break;
-//        }
+        // 创建死亡效果
+        private void createDeathEffect(String path, int frameCount, float duration, float delay) {
+            AEffect effect = new AEffect(path, frameCount, duration, delay);
+            effect.setPosition(zombie.getPosition());
+            zombie.getParent().addChild(effect, 6);
+        }
+
+        private void createDeathEffect(String path, int frameCount, float duration, float delay, CGPoint position) {
+            AEffect effect = new AEffect(path, frameCount, duration, delay);
+            effect.setPosition(position);
+            zombie.getParent().addChild(effect, 6);
+        }
+    }
+
+    // 最后阶段状态类
+    class LastState implements ZombieState {
+        private NewspaperZombie zombie;
+
+        LastState(NewspaperZombie zombie) {
+            this.zombie = zombie;
+        }
+
+        @Override
+        public void initialize() {
+            ArrayList<CCSpriteFrame> frames = new ArrayList<>();
+            for (int i = 0; i < 10; i++) {
+                CCSpriteFrame ccSpriteFrame = CCSprite.sprite(String.format(Locale.CHINA,
+                        "zombies/zombies_1/NewspaperZombie/last%02d.png", i)).displayedFrame();
+                frames.add(ccSpriteFrame);
+            }
+
+            zombie.setMoveInt(ToolsSet.newspaperZombieIntA);
+            zombie.setMove(ToolsSet.newspaperZombieMoveA);
+            zombie.setAttackInt(ToolsSet.newspaperZombieAttackIntA);
+            zombie.setAttacka(ToolsSet.newspaperZombieAttackA);
+            zombie.setSpeed(15); // 保持速度
+
+            CCAnimation ccAnimation = CCAnimation.animationWithFrames(frames, 0.1f);
+            CCAnimate ccAnimate = CCAnimate.action(ccAnimation, true);
+            CCRepeatForever ccRepeatForever = CCRepeatForever.action(ccAnimate);
+            zombie.runAction(ccRepeatForever);
+
+            CCDelayTime ccDelayTime = CCDelayTime.action(1);
+            CCCallFunc ccCallFunc = CCCallFunc.action(zombie, "move");
+            CCSequence ccSequence = CCSequence.actions(ccDelayTime, ccCallFunc);
+            zombie.runAction(ccSequence);
+        }
+
+        @Override
+        public void handleHurt() {
+            // 最后阶段可以添加其他逻辑
+        }
+
+        @Override
+        public void handleDeath(int dieState) {
+            // 处理死亡效果
+            switch (dieState) {
+                case 0:
+                    createDeathEffect("zombies/zombies_1/NewspaperZombie/die%02d.png", 11, 2, 0.181f);
+                    createDeathEffect("zombies/zombies_1/NewspaperZombie/head%02d.png", 10, 1.2f, 0.12f, CGPoint.ccp(zombie.getPosition().x + 20, zombie.getPosition().y - 30));
+                    break;
+                case 1:
+                    createDeathEffect("zombies/zombies_1/BoomDie/Frame%02d.png", 20, 4, 0.2f);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        // 创建死亡效果
+        private void createDeathEffect(String path, int frameCount, float duration, float delay) {
+            AEffect effect = new AEffect(path, frameCount, duration, delay);
+            effect.setPosition(zombie.getPosition());
+            zombie.getParent().addChild(effect, 6);
+        }
+
+        private void createDeathEffect(String path, int frameCount, float duration, float delay, CGPoint position) {
+            AEffect effect = new AEffect(path, frameCount, duration, delay);
+            effect.setPosition(position);
+            zombie.getParent().addChild(effect, 6);
+        }
     }
 }
+/*
+引入了 ZombieState 接口和两个实现类（NormalState 和 LastState），以管理僵尸的不同状态。这样，状态的逻辑被封装在各自的类中，减少了 NewspaperZombie 类的复杂性。
+NewspaperZombie 类只负责管理状态和初始化，遵循单一责任原则。
+ */
