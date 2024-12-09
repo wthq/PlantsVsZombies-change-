@@ -60,13 +60,13 @@ public class CherryBomb extends Plant{
                 zombie.death(1);
                 zombie.removeSelf();
                 zombieIterator.remove();
-                // 在僵尸死亡位置生成豌豆射手
+                // 在僵尸死亡位置生成彩蛋
                 float x = zombie.getPosition().x;
                 float y = zombie.getPosition().y;
                 Kahu kahu = new Kahu();
                 kahu.setPosition(x, y);
                 getParent().addChild(kahu);
-                // 实现5秒后隐藏Kahu
+                // 实现5秒后隐藏彩蛋
                 CCDelayTime delayTime = CCDelayTime.action(5.0f);  // 创建延迟5秒的动作
                 CCHide hideAction = CCHide.action();  // 创建隐藏动作
                 CCSequence sequence = CCSequence.actions(delayTime, hideAction);  // 组合成顺序动作，先延迟再隐藏

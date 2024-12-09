@@ -32,7 +32,7 @@ public class PlantCard {
         return sprite;
     }
 
-    
+
 
     public int getId() {
         return id;
